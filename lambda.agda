@@ -316,3 +316,45 @@ data _⊢_⦂_ : Context → Term → Type → Set where
     → Γ , x ⦂ A ⊢ M ⦂ A
       -----------------
     → Γ ⊢ μ x ⇒ M ⦂ A
+
+Ch : Type → Type
+Ch A = (A ⇒ A) ⇒ A ⇒ A
+
+⊢twoᶜ : ∀ {Γ A} → Γ ⊢ twoᶜ ⦂ Ch A
+⊢twoᶜ = ⊢ƛ (⊢ƛ (⊢` ∋s · (⊢` ∋s · ⊢` ∋z)))
+  where
+  ∋s = S' Z
+  ∋z = Z
+
+⊢two : ∀ {Γ} → Γ ⊢ two ⦂ `ℕ
+⊢two = ⊢suc (⊢suc ⊢zero)
+
+⊢plus : ∀ {Γ} → Γ ⊢ plus ⦂ `ℕ ⇒ `ℕ ⇒ `ℕ
+⊢plus = ⊢μ (⊢ƛ (⊢ƛ (⊢case (⊢` ∋m) (⊢` ∋n)
+         (⊢suc (⊢` ∋+ · ⊢` ∋m' · ⊢` ∋n')))))
+  where
+  ∋+  = S' (S' (S' Z))
+  ∋m  = S' Z
+  ∋n  = Z
+  ∋m' = Z
+  ∋n' = S' Z
+
+⊢2+2 : ∅ ⊢ plus · two · two ⦂ `ℕ
+⊢2+2 = ⊢plus · ⊢two · ⊢two
+
+
+⊢plusᶜ : ∀ {Γ A} → Γ  ⊢ plusᶜ ⦂ Ch A ⇒ Ch A ⇒ Ch A
+⊢plusᶜ = ⊢ƛ (⊢ƛ (⊢ƛ (⊢ƛ (⊢` ∋m · ⊢` ∋s · (⊢` ∋n · ⊢` ∋s · ⊢` ∋z)))))
+  where
+  ∋m = S' (S' (S' Z))
+  ∋n = S' (S' Z)
+  ∋s = S' Z
+  ∋z = Z
+
+⊢sucᶜ : ∀ {Γ} → Γ ⊢ sucᶜ ⦂ `ℕ ⇒ `ℕ
+⊢sucᶜ = ⊢ƛ (⊢suc (⊢` ∋n))
+  where
+  ∋n = Z
+
+⊢2+2ᶜ : ∅ ⊢ plusᶜ · twoᶜ · twoᶜ · sucᶜ · `zero ⦂ `ℕ
+⊢2+2ᶜ = ⊢plusᶜ · ⊢twoᶜ · ⊢twoᶜ · ⊢sucᶜ · ⊢zero
